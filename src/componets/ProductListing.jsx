@@ -1,102 +1,409 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useState } from 'react'
+import {
+  Dialog,
+  DialogBackdrop,
+  DialogPanel,
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
+} from '@headlessui/react'
+import { XMarkIcon } from '@heroicons/react/24/outline'
+import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon } from '@heroicons/react/20/solid'
+import item from '../assets/images/product1.jpg'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+import ResponsivePagination from 'react-responsive-pagination';
+import 'react-responsive-pagination/themes/classic-light-dark.css';
 
-export default function ProductListing() {
+const sortOptions = [
+  { name: 'Most Popular', href: '#', current: true },
+  { name: 'Best Rating', href: '#', current: false },
+  { name: 'Newest', href: '#', current: false },
+  { name: 'Price: Low to High', href: '#', current: false },
+  { name: 'Price: High to Low', href: '#', current: false },
+]
+const subCategories = [
+  { name: 'Totes', href: '#' },
+  { name: 'Backpacks', href: '#' },
+  { name: 'Travel Bags', href: '#' },
+  { name: 'Hip Bags', href: '#' },
+  { name: 'Laptop Sleeves', href: '#' },
+]
+const filters = [
+  {
+    id: 'color',
+    name: 'Color',
+    options: [
+      { value: 'white', label: 'White', checked: false },
+      { value: 'beige', label: 'Beige', checked: false },
+      { value: 'blue', label: 'Blue', checked: true },
+      { value: 'brown', label: 'Brown', checked: false },
+      { value: 'green', label: 'Green', checked: false },
+      { value: 'purple', label: 'Purple', checked: false },
+    ],
+  },
+  {
+    id: 'category',
+    name: 'Category',
+    options: [
+      { value: 'new-arrivals', label: 'New Arrivals', checked: false },
+      { value: 'sale', label: 'Sale', checked: false },
+      { value: 'travel', label: 'Travel', checked: true },
+      { value: 'organization', label: 'Organization', checked: false },
+      { value: 'accessories', label: 'Accessories', checked: false },
+    ],
+  },
+  {
+    id: 'size',
+    name: 'Size',
+    options: [
+      { value: '2l', label: '2L', checked: false },
+      { value: '6l', label: '6L', checked: false },
+      { value: '12l', label: '12L', checked: false },
+      { value: '18l', label: '18L', checked: false },
+      { value: '20l', label: '20L', checked: false },
+      { value: '40l', label: '40L', checked: true },
+    ],
+  },
+]
+
+function classNames(...classes) {
+  return classes.filter(Boolean).join(' ')
+}
+
+
+
+export  default function ProductListing() {
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
+  const [currentPage, setCurrentPage] = useState(8);
+  const [totalPages, setTotalPage] = useState();
+  const [product , setProduct] = useState([])
+ 
+  useEffect(() => {
+    axios.get('https://wscubetech.co/ecommerce-api/products.php', {
+      params: {
+        limit: 12,
+        page: currentPage,
+        categories: ''
+      }
+    })
+    .then((result) => {
+      setProduct(result.data.data)
+      setTotalPage(result.data.total_pages)
+      console.log(result.data)
+
+    })
+    .catch((error) => { 
+      toast.error('please check tha product api')
+    })
+  },[currentPage]);
+//   useEffect(() => {
+//   console.log('Updated product list:', product);
+// }, [product]);
   return (
     <>
-     <div className="bg-gray-800 text-white">
-    <nav className="bg-gray-900 p-4 mb-6">
-      <div
-        className="container max-w-6xl mx-auto flex flex-col sm:flex-row gap-8 items-center"
-      >
-        {/* <!-- Search area --> */}
-        <div className="relative w-full">
-          <input
-            type="text"
-            id="search"
-            className="bg-gray-700 rounded-full p-2 pl-10 transition focus:w-full"
-            placeholder="Search products..."
+    
+      <div className="bg-white">
+      <div>
+        {/* Mobile filter dialog */}
+        <Dialog open={mobileFiltersOpen} onClose={setMobileFiltersOpen} className="relative z-40 lg:hidden">
+          <DialogBackdrop
+            transition
+            className="fixed inset-0 bg-black/25 transition-opacity duration-300 ease-linear data-closed:opacity-0"
           />
-          <svg
-            className="absolute left-2 top-1/2 -translate-y-1/2"
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            stroke-width="2"
-            stroke="currentColor"
-            fill="none"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-            <path d="M21 21l-6 -6" />
-          </svg>
-        </div>
 
-        {/* <!-- Cart icon --> */}
-        <span className="relative text-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            // #
-            height="24"
-            viewBox="0 0 24 24"
-            stroke-width="2"
-            stroke="currentColor"
-            fill="none"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <path
-              d="M6.331 8h11.339a2 2 0 0 1 1.977 2.304l-1.255 8.152a3 3 0 0 1 -2.966 2.544h-6.852a3 3 0 0 1 -2.965 -2.544l-1.255 -8.152a2 2 0 0 1 1.977 -2.304z"
-            />
-            <path d="M9 11v-5a3 3 0 0 1 6 0v5" />
-          </svg>
-          <small
-            id="cart-count"
-            className="bg-red-500 text-xs text-white w-4 h-4 absolute -top-2 -right-2 rounded-full"
-            >0</small
-          >
-        </span>
+          <div className="fixed inset-0 z-40 flex">
+            <DialogPanel
+              transition
+              className="relative ml-auto flex size-full max-w-xs transform flex-col overflow-y-auto bg-white py-4 pb-12 shadow-xl transition duration-300 ease-in-out data-closed:translate-x-full"
+            >
+              <div className="flex items-center justify-between px-4">
+                <h2 className="text-lg font-medium text-gray-900">Filters</h2>
+                <button
+                  type="button"
+                  onClick={() => setMobileFiltersOpen(false)}
+                  className="-mr-2 flex size-10 items-center justify-center rounded-md bg-white p-2 text-gray-400"
+                >
+                  <span className="sr-only">Close menu</span>
+                  <XMarkIcon aria-hidden="true" className="size-6" />
+                </button>
+              </div>
+
+              {/* Filters */}
+              <form className="mt-4 border-t border-gray-200">
+                <h3 className="sr-only">Categories</h3>
+                <ul role="list" className="px-2 py-3 font-medium text-gray-900">
+                  {subCategories.map((category) => (
+                    <li key={category.name}>
+                      <a href={category.href} className="block px-2 py-3">
+                        {category.name}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+
+                {filters.map((section) => (
+                  <Disclosure key={section.id} as="div" className="border-t border-gray-200 px-4 py-6">
+                    <h3 className="-mx-2 -my-3 flow-root">
+                      <DisclosureButton className="group flex w-full items-center justify-between bg-white px-2 py-3 text-gray-400 hover:text-gray-500">
+                        <span className="font-medium text-gray-900">{section.name}</span>
+                        <span className="ml-6 flex items-center">
+                          <PlusIcon aria-hidden="true" className="size-5 group-data-open:hidden" />
+                          <MinusIcon aria-hidden="true" className="size-5 group-not-data-open:hidden" />
+                        </span>
+                      </DisclosureButton>
+                    </h3>
+                    <DisclosurePanel className="pt-6">
+                      <div className="space-y-6">
+                        {section.options.map((option, optionIdx) => (
+                          <div key={option.value} className="flex gap-3">
+                            <div className="flex h-5 shrink-0 items-center">
+                              <div className="group grid size-4 grid-cols-1">
+                                <input
+                                  defaultValue={option.value}
+                                  id={`filter-mobile-${section.id}-${optionIdx}`}
+                                  name={`${section.id}[]`}
+                                  type="checkbox"
+                                  className="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto"
+                                />
+                                <svg
+                                  fill="none"
+                                  viewBox="0 0 14 14"
+                                  className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25"
+                                >
+                                  <path
+                                    d="M3 8L6 11L11 3.5"
+                                    strokeWidth={2}
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="opacity-0 group-has-checked:opacity-100"
+                                  />
+                                  <path
+                                    d="M3 7H11"
+                                    strokeWidth={2}
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="opacity-0 group-has-indeterminate:opacity-100"
+                                  />
+                                </svg>
+                              </div>
+                            </div>
+                            <label
+                              htmlFor={`filter-mobile-${section.id}-${optionIdx}`}
+                              className="min-w-0 flex-1 text-gray-500"
+                            >
+                              {option.label}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </DisclosurePanel>
+                  </Disclosure>
+                ))}
+              </form>
+            </DialogPanel>
+          </div>
+        </Dialog>
+
+        <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex items-baseline justify-between border-b border-gray-200 pt-24 pb-6">
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900">New Arrivals</h1>
+
+            <div className="flex items-center">
+              <Menu as="div" className="relative inline-block text-left">
+                <div>
+                  <MenuButton className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+                    Sort
+                    <ChevronDownIcon
+                      aria-hidden="true"
+                      className="-mr-1 ml-1 size-5 shrink-0 text-gray-400 group-hover:text-gray-500"
+                    />
+                  </MenuButton>
+                </div>
+
+                <MenuItems
+                  transition
+                  className="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+                >
+                  <div className="py-1">
+                    {sortOptions.map((option) => (
+                      <MenuItem key={option.name}>
+                        <a
+                          href={option.href}
+                          className={classNames(
+                            option.current ? 'font-medium text-gray-900' : 'text-gray-500',
+                            'block px-4 py-2 text-sm data-focus:bg-gray-100 data-focus:outline-hidden',
+                          )}
+                        >
+                          {option.name}
+                        </a>
+                      </MenuItem>
+                    ))}
+                  </div>
+                </MenuItems>
+              </Menu>
+
+              <button type="button" className="-m-2 ml-5 p-2 text-gray-400 hover:text-gray-500 sm:ml-7">
+                <span className="sr-only">View grid</span>
+                <Squares2X2Icon aria-hidden="true" className="size-5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setMobileFiltersOpen(true)}
+                className="-m-2 ml-4 p-2 text-gray-400 hover:text-gray-500 sm:ml-6 lg:hidden"
+              >
+                <span className="sr-only">Filters</span>
+                <FunnelIcon aria-hidden="true" className="size-5" />
+              </button>
+            </div>
+          </div>
+
+          <section aria-labelledby="products-heading" className="pt-6 pb-24">
+            <h2 id="products-heading" className="sr-only">
+              Products
+            </h2>
+
+            <div className="flex ">
+              {/* Filters */}
+              <form className="hidden lg:block w-2xs">
+                <h3 className="sr-only">Categories</h3>
+                <ul role="list" className="space-y-4 border-b border-gray-200 pb-6 text-sm font-medium text-gray-900">
+                  {subCategories.map((category) => (
+                    <li key={category.name}>
+                      <a href={category.href}>{category.name}</a>
+                    </li>
+                  ))}
+                </ul>
+
+                {filters.map((section) => (
+                  <Disclosure key={section.id} as="div" className="border-b border-gray-200 py-6">
+                    <h3 className="-my-3 flow-root">
+                      <DisclosureButton className="group flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
+                        <span className="font-medium text-gray-900">{section.name}</span>
+                        <span className="ml-6 flex items-center">
+                          <PlusIcon aria-hidden="true" className="size-5 group-data-open:hidden" />
+                          <MinusIcon aria-hidden="true" className="size-5 group-not-data-open:hidden" />
+                        </span>
+                      </DisclosureButton>
+                    </h3>
+                    <DisclosurePanel className="pt-6">
+                      <div className="space-y-4">
+                        {section.options.map((option, optionIdx) => (
+                          <div key={option.value} className="flex gap-3">
+                            <div className="flex h-5 shrink-0 items-center">
+                              <div className="group grid size-4 grid-cols-1">
+                                <input
+                                  defaultValue={option.value}
+                                  defaultChecked={option.checked}
+                                  id={`filter-${section.id}-${optionIdx}`}
+                                  name={`${section.id}[]`}
+                                  type="checkbox"
+                                  className="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto"
+                                />
+                                <svg
+                                  fill="none"
+                                  viewBox="0 0 14 14"
+                                  className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25"
+                                >
+                                  <path
+                                    d="M3 8L6 11L11 3.5"
+                                    strokeWidth={2}
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="opacity-0 group-has-checked:opacity-100"
+                                  />
+                                  <path
+                                    d="M3 7H11"
+                                    strokeWidth={2}
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="opacity-0 group-has-indeterminate:opacity-100"
+                                  />
+                                </svg>
+                              </div>
+                            </div>
+                            <label htmlFor={`filter-${section.id}-${optionIdx}`} className="text-sm text-gray-600">
+                              {option.label}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </DisclosurePanel>
+                  </Disclosure>
+                ))}
+              </form>
+
+              {/* Product grid */}
+              {/* Your content */}
+                {
+                  product.length > 0 
+                  ?
+                     <div className=''>
+                    <div className="bg-white">
+                  <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+                    <h2 className="text-2xl font-bold tracking-tight text-gray-900">Customers also purchased</h2>
+
+                    <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-14
+                    ">
+                      {
+                        product.map((item) => {
+                          return(
+                            <div key={item.id} className="group relative">  
+                              <img
+                                alt=''
+                                src={item.image}               
+                                className="aspect-square w-full rounded-md bg-gray-200 object-cover group-hover:opacity-75 lg:aspect-auto lg:h-80"
+                              />
+                              <div className="mt-4 flex justify-between">
+                                <div>
+                                  <h3 className="text-sm text-gray-700">
+                                    <a href=''>
+                                      <span aria-hidden="true" className="absolute inset-0" />
+                                      {item.name}
+                                    </a>
+                                  </h3>
+                                  <p className="mt-1 text-sm text-gray-500">
+                                    {item.rating}
+                                    </p>
+                                </div>
+                                <p className="text-sm font-medium text-gray-900">
+                                {item.price}
+                                  </p>
+                                  
+                              </div>
+                               <button type="button" className=" py-3 text-white bg-purple-700 hover:bg-purple-800  focus:ring-purple-300 font-medium rounded-lg text-sm px-5 mx-2  my-4">Add to Cart</button>
+                            </div>
+                          )
+                        })
+                      }
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+                  :
+                  ''
+                }
+              
+
+            </div>
+          </section>
+        </main>
       </div>
-    </nav>
-
-    <main className="flex flex-col md:flex-row container mx-auto max-w-6xl">
-      <div className="space-y-4 p-2 w-full md:max-w-[10rem]">
-        <h2 className="text-2xl">Filters</h2>
-        <h3 className="text-xl mb-2">Category</h3>
-        <div id="filters-container" className="text-xl space-y-2">
-          <div>
-            <input type="checkbox" className="check" id="cameras" />
-            <label for="cameras">Cameras</label>
-          </div>
-          <div>
-            <input type="checkbox" className="check" id="smartphones" />
-            <label for="smartphones">Smartphones</label>
-          </div>
-          <div>
-            <input type="checkbox" className="check" id="games" />
-            <label for="games">Games</label>
-          </div>
-          <div>
-            <input type="checkbox" className="check" id="televisions" />
-            <label for="televisions">Televisions</label>
-          </div>
-        </div>
-      </div>
-
-      {/* <!-- Products wrapper --> */}
-      <div
-        id="products-wrapper"
-        className="w-full max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-6 place-content-center p-4"
-      ></div>
-    </main>
-
-
     </div>
 
+     <ResponsivePagination
+      current={currentPage}
+      total={totalPages}
+      onPageChange={setCurrentPage}
+    />
     </>
   )
 }
+

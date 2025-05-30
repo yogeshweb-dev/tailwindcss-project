@@ -12,7 +12,7 @@ export default function Home() {
     axios.get('https://wscubetech.co/ecommerce-api/products.php', {
       params:{
         limit: 8,
-        categories: 'mens-shirts,mens-shoes'
+        categories: 'mens-shirts,mens-shoes',
       }
     })
     .then((result) => {
