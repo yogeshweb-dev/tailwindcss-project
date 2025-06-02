@@ -22,7 +22,7 @@ export default function Home() {
       toast.error('Something went wrong !')
     })
   },[])
-    console.log('bastSelling', bastSelling)
+    
   useEffect(() => {
     axios.get('https://wscubetech.co/ecommerce-api/products.php',{
       params:{
@@ -31,13 +31,12 @@ export default function Home() {
     })
     .then((result) => {
       setTopRated(result.data.data)
-      console.log('setTopRated',result.data.data)
+      
     })
     .catch(() =>{
        toast.error('Something went wrong !')
     })
   },[])
-console.log('topRated',topRated)
   return (
     <>
       <HomeSlider/>

@@ -345,7 +345,7 @@ export  default function ProductListing() {
                   ?
                      <div className=''>
                     <div className="bg-white">
-                  <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+                  <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-8 lg:max-w-7xl lg:px-8">
                     <h2 className="text-2xl font-bold tracking-tight text-gray-900">Customers also purchased</h2>
 
                     <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-14
@@ -363,7 +363,7 @@ export  default function ProductListing() {
                                 <div>
                                   <h3 className="text-sm text-gray-700">
                                     <a href=''>
-                                      <span aria-hidden="true" className="absolute inset-0" />
+                                    
                                       {item.name}
                                     </a>
                                   </h3>
@@ -393,16 +393,19 @@ export  default function ProductListing() {
               
 
             </div>
+           <div className='pt-5'>
+             <ResponsivePagination
+              current={currentPage}
+              total={totalPages}
+              onPageChange={setCurrentPage}
+            />
+           </div>
           </section>
         </main>
       </div>
     </div>
 
-     <ResponsivePagination
-      current={currentPage}
-      total={totalPages}
-      onPageChange={setCurrentPage}
-    />
+     
     </>
   )
 }

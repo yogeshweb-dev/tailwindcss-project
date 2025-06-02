@@ -2,13 +2,17 @@ import React from 'react'
 import { useState } from 'react'
 import { Dialog, DialogPanel, PopoverGroup, } from '@headlessui/react'  
 import {  Bars3Icon, XMarkIcon,} from '@heroicons/react/24/outline'
-import { PhoneIcon, PlayCircleIcon} from '@heroicons/react/20/solid'
 import { Link } from 'react-router-dom'
 import { FaCartShopping } from 'react-icons/fa6'
 import logo from '../../assets/images/logo.svg'
+import { useSelector } from 'react-redux'
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  const cartSlider = useSelector((state) => {
+    console.log('cartslider :', state)
+  })
   
 
   return (
